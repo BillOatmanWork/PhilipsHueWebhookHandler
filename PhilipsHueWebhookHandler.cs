@@ -7,6 +7,8 @@ namespace PhilipsHueWebhookHandler
     {
         static async Task Main(string[] args)
         {
+            bool run = false;
+
             File.Delete("PhilipsHueWebhookHandler.log");
 
             Utility.ConsoleWithLog($"PhilipsHueWebhookHandler version {System.Reflection.Assembly.GetExecutingAssembly().GetName().Version}");
@@ -98,6 +100,11 @@ namespace PhilipsHueWebhookHandler
                         Utility.ConsoleWithLog("Unknown parameter: " + arg);
                         return;
                 }
+            }
+
+            if(run == false)
+            {
+                return;
             }
 
             BridgeController.InitializeAsync("", "");
