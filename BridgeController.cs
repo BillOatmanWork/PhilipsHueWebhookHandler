@@ -1,6 +1,8 @@
-﻿using Q42.HueApi;
+using Q42.HueApi;
 using Q42.HueApi.Interfaces;
+using Q42.HueApi.Models.Bridge;
 using Q42.HueApi.Models.Groups;
+using System.Collections;
 using System.Reflection.Metadata.Ecma335;
 
 // https://github.com/michielpost/Q42.HueApi/blob/master/src/HueApi.ConsoleSample/Program.cs
@@ -30,21 +32,21 @@ namespace PhilipsHueWebhookHandler
         {
             // Discover Hue Bridges on the network
             var locator = new HttpBridgeLocator();
-            var bridges = (await locator.LocateBridgesAsync(TimeSpan.FromSeconds(5))).ToList(); // Convert to list
+            IEnumerable<LocatedBridge> bridges = (await locator.LocateBridgesAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false)).ToList();
 
-            if (bridges.Count > 0)
+            if (bridges.Any())
             {
                 foreach (var bridge in bridges)
                 {
-                    Console.WriteLine($"Bridge found: IP = {bridge.IpAddress}, ID = {bridge.BridgeId}");
+                    Utility.ConsoleWithLog($"Bridge found: IP = {bridge.IpAddress}");
                 }
             }
             else
             {
-                Console.WriteLine("No bridges found on the network.");
+                Utility.ConsoleWithLog("No bridges found on the network.");
             }
 
-            return bridges.Count;
+            return bridges.Count();
         }
     }
 }

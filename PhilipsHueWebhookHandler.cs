@@ -1,13 +1,63 @@
-﻿using System.Net;
+using System.Net;
 using System.Text.Json;
 
 namespace PhilipsHueWebhookHandler
 {
-    internal class PhilipsHueWebhookHandler
+    public class PhilipsHueWebhookHandler
     {
         static async Task Main(string[] args)
         {
             File.Delete("PhilipsHueWebhookHandler.log");
+
+            Utility.ConsoleWithLog($"PhilipsHueWebhookHandler version {System.Reflection.Assembly.GetExecutingAssembly().GetName().Version}");
+            Utility.ConsoleWithLog("");
+
+            if (args.Length == 0)
+            {
+                DisplayHelp();
+                return;
+            }
+
+            Utility.ConsoleWithLog("Passed Parameters: ");
+            foreach (string arg in args)
+            {
+                if (!arg.ToLower().Contains("-key"))
+                {
+                    Utility.ConsoleWithLog(arg);
+                }
+            }
+
+            Utility.ConsoleWithLog("");
+
+            foreach (string arg in args)
+            {
+                if (arg == "-?")
+                {
+                    DisplayHelp();
+                    return;
+                }
+
+                if (arg == "-discover")
+                {
+                    await BridgeController.DiscoverBridges().ConfigureAwait(false);
+                    Console.WriteLine("");
+                    Console.WriteLine("Hit enter to continue");
+                    Console.ReadLine();
+                    return;
+                }
+
+                switch (arg.Substring(0, arg.IndexOf('=')).ToLower())
+                {
+                    case "-h":
+                    case "-help":
+                        DisplayHelp();
+                        return;
+
+                    default:
+                        Utility.ConsoleWithLog("Unknown parameter: " + arg);
+                        return;
+                }
+            }
 
             BridgeController.InitializeAsync("", "");
 
@@ -49,6 +99,46 @@ namespace PhilipsHueWebhookHandler
 
                 context.Response.Close();
             }
+        }
+
+        private static void DisplayHelp()
+        {
+            Utility.ConsoleWithLog("Parameters: (Case Insensitive)");
+            Utility.ConsoleWithLog("\tUser = PD user name.");
+            Utility.ConsoleWithLog("\tPass = PD password.");
+            Utility.ConsoleWithLog("\tLocale = The case sensitive LanguageCode-CountryCode to use for the guide data. Default is the locale of the computer. Currently supported are en-US, en-GB, and de-DE. Others by request.");
+            Utility.ConsoleWithLog("\tnflLength = Length of time to use, in hours, for NFL games.  Used to calculate stop time.  Default 4.");
+            Utility.ConsoleWithLog("\tncaafLength = Length of time to use, in hours, for NCAA football games.  Used to calculate stop time.  Default 4.");
+            Utility.ConsoleWithLog("\tncaabLength = Length of time to use, in hours, for NCAA basketball games.  Used to calculate stop time.  Default 3.");
+            Utility.ConsoleWithLog("\tncaawLength = Length of time to use, in hours, for NCAA Womens basketball games.  Used to calculate stop time.  Default 3.");
+            Utility.ConsoleWithLog("\tnhlLength = Length of time to use, in hours, for NHL/ECHL games.  Used to calculate stop time.  Default 3.");
+            Utility.ConsoleWithLog("\tnbaLength = Length of time to use, in hours, for NBA games.  Used to calculate stop time.  Default 3.");
+            Utility.ConsoleWithLog("\twnbaLength = Length of time to use, in hours, for WNBA games.  Used to calculate stop time.  Default 3.");
+            Utility.ConsoleWithLog("\tmlbLength = Length of time to use, in hours, for MLB games.  Used to calculate stop time.  Default 4.");
+            Utility.ConsoleWithLog("\tppvLength = Length of time to use, in hours, for PPV events.  Used to calculate stop time.  Default 5.");
+            Utility.ConsoleWithLog("\tmlsLength = Length of time to use, in hours, for MLS games.  Used to calculate stop time.  Default 3.");
+            Utility.ConsoleWithLog("\tnwslLength = Length of time to use, in hours, for NWSL games.  Used to calculate stop time.  Default 3.");
+            Utility.ConsoleWithLog("\tuse12Hour = Use 12 hour format when putting times in desciptions.  Default 24 hour format.");
+            Utility.ConsoleWithLog("\tisDST = Assume daylight savings time is in effect.  Default use operating system flag.");
+            Utility.ConsoleWithLog("\tisNotDST = Assume daylight savings time is not in effect.  Default use operating system flag.");
+            Utility.ConsoleWithLog("\tShortDesc = Do not put the localized date and time in EPG descriptions.");
+            Utility.ConsoleWithLog("\tDumpM3U = Optional - The full path and filename of the file you wish to save the m3u data.");
+            Utility.ConsoleWithLog("\tDumpXmltv = Optional - The full path and filename of the file you wish to save the xmltv data.");
+            Utility.ConsoleWithLog("\tUseTabs = Optional - Use tabs instead of spaces when generating NHL stats in the EPG description.");
+            Utility.ConsoleWithLog("\tUseMetric = Optional - Use metric usits for weather instead of the default imperial units.");
+            Utility.ConsoleWithLog("\tRetryTennis = Optional - Retry tennis plus channels that report no data. Default no retries.  Note this will cause a significant slow down.");
+            Utility.ConsoleWithLog("\tDisableEmoji = Optional - Disable the use of emoji in the guide data.");
+            Utility.ConsoleWithLog("\tNoLog = Optional - Do not log activity.");
+            Utility.ConsoleWithLog("\tOddsApiKey = Optional - Free X-RapidAPI-Key from https://rapidapi.com/theoddsapi/api/live-sports-odds/ if you want the current money line in the description.");
+            Utility.ConsoleWithLog("\tUseCustomLogos = Optional - Use generated cusTOM logo icons for game chnnels.  Read PDF for how to configure.");
+            Utility.ConsoleWithLog("\tGuide = Optional - Create PDF with all of the guide data.");
+            Utility.ConsoleWithLog("\tMoneyLine = Optional - Create PDF with all of the moneyline betting information.");
+            Utility.ConsoleWithLog("\tNote:  No spaces before or after the =, so for example -user=IamTheUser.");
+            Utility.ConsoleWithLog("");
+            Utility.ConsoleWithLog("");
+
+            Utility.ConsoleWithLog("Hit enter to continue");
+            Console.ReadLine();
         }
     }
 }

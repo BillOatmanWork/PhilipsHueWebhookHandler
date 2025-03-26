@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "PhilipsHueWebhookHandler": {
+      "commandName": "Project",
+      "commandLineArgs": "-discover"
+    }
+  }
+}
