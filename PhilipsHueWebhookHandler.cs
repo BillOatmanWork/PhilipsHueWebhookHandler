@@ -46,6 +46,47 @@ namespace PhilipsHueWebhookHandler
                     return;
                 }
 
+                if (arg == "-autoregister")
+                {
+                    int numBridges = await BridgeController.DiscoverBridges(true).ConfigureAwait(false);
+                    Console.WriteLine("");
+
+                    if (numBridges == 0)
+                    {
+                        Utility.ConsoleWithLog("No bridges found on the network. Nothing to register with.");
+                        Console.WriteLine("Hit enter to continue");
+                        Console.ReadLine();
+                        return;
+                    }
+
+                    if (numBridges > 1)
+                    {
+                        Utility.ConsoleWithLog($"{numBridges} bridges found on the network. Select one and call with -Register=IPAddress.");
+                        Console.WriteLine("Hit enter to continue");
+                        Console.ReadLine();
+                        return;
+                    }
+
+                    string? bridgeIp = BridgeController.GetBridgeIp();
+                    if (bridgeIp is null)
+                    {
+                        Utility.ConsoleWithLog("Bridge IP is null. Cannot register with the bridge.");
+                        return;
+                    }
+
+                    bool success = await BridgeController.RegisterWithBridge(bridgeIp).ConfigureAwait(false);
+                    if (success)
+                    {
+                        Utility.ConsoleWithLog($"Successfully registered with the bridge at {bridgeIp}.");
+                    }
+                    else
+                    {
+                        Utility.ConsoleWithLog($"Failed to register with the bridge at {bridgeIp}.");
+                    }
+
+                    return;
+                }
+
                 switch (arg.Substring(0, arg.IndexOf('=')).ToLower())
                 {
                     case "-h":

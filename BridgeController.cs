@@ -4,6 +4,7 @@ using Q42.HueApi.Models.Bridge;
 using Q42.HueApi.Models.Groups;
 using System.Collections;
 using System.Reflection.Metadata.Ecma335;
+using static System.Net.Mime.MediaTypeNames;
 
 // https://github.com/michielpost/Q42.HueApi/blob/master/src/HueApi.ConsoleSample/Program.cs
 
@@ -13,7 +14,7 @@ namespace PhilipsHueWebhookHandler
     {
         private static string? _bridgeIp;
         private static string? _key;
-        private static ILocalHueClient? _client = null;
+        private static ILocalHueClient? _client;
 
         public static void InitializeAsync(string ip, string key)
         {
@@ -28,14 +29,16 @@ namespace PhilipsHueWebhookHandler
                 _client.Initialize(_key);
         }
 
-        public static async Task<int> DiscoverBridges()
+        public static async Task<int> DiscoverBridges(bool fromRegisterWithBridge = false)
         {
-            // Discover Hue Bridges on the network
             var locator = new HttpBridgeLocator();
             IEnumerable<LocatedBridge> bridges = (await locator.LocateBridgesAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false)).ToList();
 
             if (bridges.Any())
             {
+                if(fromRegisterWithBridge == true && bridges.Count() == 1)
+                    _bridgeIp = bridges.First().IpAddress;
+
                 foreach (var bridge in bridges)
                 {
                     Utility.ConsoleWithLog($"Bridge found: IP = {bridge.IpAddress}");
@@ -47,6 +50,42 @@ namespace PhilipsHueWebhookHandler
             }
 
             return bridges.Count();
+        }
+
+        public static async Task<bool> RegisterWithBridge(string bridgeIp)
+        {
+            ILocalHueClient client = new LocalHueClient(bridgeIp);
+
+            Console.WriteLine($"Press the button on your Hue Bridge at {bridgeIp}, then press Enter...");
+            Console.ReadLine();
+
+            try
+            {
+                string? appKey = await client.RegisterAsync("EmbyPhilipsHueWebhookHandler", "EmbyServer").ConfigureAwait(false);
+                if (appKey == null)
+                {
+                    throw new InvalidOperationException($"Failed to register with the bridge at {bridgeIp}.");
+                }
+
+                Console.WriteLine($"App registered successfully! Your app key: {appKey}");
+
+                using (StreamWriter file = File.AppendText("Keys.txt"))
+                {
+                    file.Write($"Bridge IP: {bridgeIp}  Key: {appKey}{Environment.NewLine}");
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception registering with the bridge at {bridgeIp}: {ex.Message}");
+                return false;
+            }
+        }
+
+        public static string? GetBridgeIp()
+        {
+            return _bridgeIp;
         }
     }
 }

@@ -1,37 +1,37 @@
-﻿namespace PhilipsHueWebhookHandler
+namespace PhilipsHueWebhookHandler
 {
     public class ImageTags
     {
-        public string Primary { get; set; }
+        public string Primary { get; set; } = string.Empty;
     }
 
     public class Item
     {
-        public string Name { get; set; }
-        public string ServerId { get; set; }
-        public string Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string ServerId { get; set; } = string.Empty;
+        public string Id { get; set; } = string.Empty;
         public DateTime DateCreated { get; set; }
-        public string Container { get; set; }
-        public string SortName { get; set; }
-        public List<object> ExternalUrls { get; set; }
-        public string Path { get; set; }
-        public List<object> Taglines { get; set; }
-        public List<object> Genres { get; set; }
+        public string Container { get; set; } = string.Empty;
+        public string SortName { get; set; } = string.Empty;
+        public List<object> ExternalUrls { get; set; } = new List<object>();
+        public string Path { get; set; } = string.Empty;
+        public List<object> Taglines { get; set; } = new List<object>();
+        public List<object> Genres { get; set; } = new List<object>();
         public long RunTimeTicks { get; set; }
         public int Size { get; set; }
-        public string FileName { get; set; }
+        public string FileName { get; set; } = string.Empty;
         public int Bitrate { get; set; }
-        public List<object> RemoteTrailers { get; set; }
-        public ProviderIds ProviderIds { get; set; }
+        public List<object> RemoteTrailers { get; set; } = new List<object>();
+        public ProviderIds ProviderIds { get; set; } = new ProviderIds();
         public bool IsFolder { get; set; }
-        public string Type { get; set; }
-        public List<object> Studios { get; set; }
-        public List<object> GenreItems { get; set; }
-        public List<object> TagItems { get; set; }
+        public string Type { get; set; } = string.Empty;
+        public List<object> Studios { get; set; } = new List<object>();
+        public List<object> GenreItems { get; set; } = new List<object>();
+        public List<object> TagItems { get; set; } = new List<object>();
         public double PrimaryImageAspectRatio { get; set; }
-        public ImageTags ImageTags { get; set; }
-        public List<object> BackdropImageTags { get; set; }
-        public string MediaType { get; set; }
+        public ImageTags ImageTags { get; set; } = new ImageTags();
+        public List<object> BackdropImageTags { get; set; } = new List<object>();
+        public string MediaType { get; set; } = string.Empty;
         public int Width { get; set; }
         public int Height { get; set; }
     }
@@ -41,7 +41,7 @@
         public int PositionTicks { get; set; }
         public int PlaylistIndex { get; set; }
         public int PlaylistLength { get; set; }
-        public string PlaySessionId { get; set; }
+        public string PlaySessionId { get; set; } = string.Empty;
     }
 
     public class ProviderIds
@@ -50,38 +50,38 @@
 
     public class Root
     {
-        public string Title { get; set; }
-        public string Description { get; set; }
+        public string Title { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
         public DateTime Date { get; set; }
-        public string Event { get; set; }
-        public User User { get; set; }
-        public Item Item { get; set; }
-        public Server Server { get; set; }
-        public Session Session { get; set; }
-        public PlaybackInfo PlaybackInfo { get; set; }
+        public string Event { get; set; } = string.Empty;
+        public User User { get; set; } = new User();
+        public Item Item { get; set; } = new Item();
+        public Server Server { get; set; } = new Server();
+        public Session Session { get; set; } = new Session();
+        public PlaybackInfo PlaybackInfo { get; set; } = new PlaybackInfo();
     }
 
     public class Server
     {
-        public string Name { get; set; }
-        public string Id { get; set; }
-        public string Version { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Id { get; set; } = string.Empty;
+        public string Version { get; set; } = string.Empty;
     }
 
     public class Session
     {
-        public string RemoteEndPoint { get; set; }
-        public string Client { get; set; }
-        public string DeviceName { get; set; }
-        public string DeviceId { get; set; }
-        public string ApplicationVersion { get; set; }
-        public string Id { get; set; }
+        public string RemoteEndPoint { get; set; } = string.Empty;
+        public string Client { get; set; } = string.Empty;
+        public string DeviceName { get; set; } = string.Empty;
+        public string DeviceId { get; set; } = string.Empty;
+        public string ApplicationVersion { get; set; } = string.Empty;
+        public string Id { get; set; } = string.Empty;
     }
 
     public class User
     {
-        public string Name { get; set; }
-        public string Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Id { get; set; } = string.Empty;
     }
 
     public static class PayloadDump
