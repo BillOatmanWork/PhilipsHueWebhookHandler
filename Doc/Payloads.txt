@@ -1,0 +1,160 @@
+Webhook endpoint is running on http://localhost:8080/webhook/
+Webhook received:
+
+Title: Bill is playing 1917 on LivingRoom
+Description: Tuesday, March 25, 2025 2:48 PM
+Date: 3/25/2025 6:48:22 PM
+Event: playback.start
+User Name: Bill
+User Id: d063f08a14564602852a2d932adf2d23
+Item Name: 1917
+Item ServerId: cdeedde7f9734edab1d8acd4c43b01cd
+Item Id: 1355704
+Item DateCreated: 3/14/2020 9:36:26 PM
+Item Container: mp4
+Item SortName: 1917
+Item Path: F:\Movies\1917 (2019)..mp4
+Item RunTimeTicks: 71382150000
+Item Size: 1144665965
+Item FileName: 1917 (2019)..mp4
+Item Bitrate: 1282859
+Item IsFolder: False
+Item Type: Movie
+Item PrimaryImageAspectRatio: 0.6666666666666666
+Item MediaType: Video
+Item Width: 1280
+Item Height: 534
+Item ImageTags Primary: cd04533c1e467a698339631a29af7559
+Server Name: OatmanEmbyServer
+Server Id: cdeedde7f9734edab1d8acd4c43b01cd
+Server Version: 4.8.11.0
+Session RemoteEndPoint: 192.168.50.40
+Session Client: AndroidTv
+Session DeviceName: LivingRoom
+Session DeviceId: eea86403e026a93d
+Session ApplicationVersion: 2.1.23g
+Session Id: 40d36db4c9959705944877a5f4faea89
+PlaybackInfo PositionTicks: 0
+PlaybackInfo PlaylistIndex: 0
+PlaybackInfo PlaylistLength: 0
+PlaybackInfo PlaySessionId: c8ccc2b4b854473699d8da47742e0fae
+
+Webhook received:
+
+Title: Bill has paused 1917 on LivingRoom
+Description: Tuesday, March 25, 2025 2:48 PM
+Date: 3/25/2025 6:48:31 PM
+Event: playback.pause
+User Name: Bill
+User Id: d063f08a14564602852a2d932adf2d23
+Item Name: 1917
+Item ServerId: cdeedde7f9734edab1d8acd4c43b01cd
+Item Id: 1355704
+Item DateCreated: 3/14/2020 9:36:26 PM
+Item Container: mp4
+Item SortName: 1917
+Item Path: F:\Movies\1917 (2019)..mp4
+Item RunTimeTicks: 71382150000
+Item Size: 1144665965
+Item FileName: 1917 (2019)..mp4
+Item Bitrate: 1282859
+Item IsFolder: False
+Item Type: Movie
+Item PrimaryImageAspectRatio: 0.6666666666666666
+Item MediaType: Video
+Item Width: 1280
+Item Height: 534
+Item ImageTags Primary: cd04533c1e467a698339631a29af7559
+Server Name: OatmanEmbyServer
+Server Id: cdeedde7f9734edab1d8acd4c43b01cd
+Server Version: 4.8.11.0
+Session RemoteEndPoint: 192.168.50.40
+Session Client: AndroidTv
+Session DeviceName: LivingRoom
+Session DeviceId: eea86403e026a93d
+Session ApplicationVersion: 2.1.23g
+Session Id: 40d36db4c9959705944877a5f4faea89
+PlaybackInfo PositionTicks: 82940000
+PlaybackInfo PlaylistIndex: 2
+PlaybackInfo PlaylistLength: 3
+PlaybackInfo PlaySessionId: c8ccc2b4b854473699d8da47742e0fae
+
+Webhook received:
+
+Title: Bill has resumed 1917 on LivingRoom
+Description: Tuesday, March 25, 2025 2:48 PM
+Date: 3/25/2025 6:48:36 PM
+Event: playback.unpause
+User Name: Bill
+User Id: d063f08a14564602852a2d932adf2d23
+Item Name: 1917
+Item ServerId: cdeedde7f9734edab1d8acd4c43b01cd
+Item Id: 1355704
+Item DateCreated: 3/14/2020 9:36:26 PM
+Item Container: mp4
+Item SortName: 1917
+Item Path: F:\Movies\1917 (2019)..mp4
+Item RunTimeTicks: 71382150000
+Item Size: 1144665965
+Item FileName: 1917 (2019)..mp4
+Item Bitrate: 1282859
+Item IsFolder: False
+Item Type: Movie
+Item PrimaryImageAspectRatio: 0.6666666666666666
+Item MediaType: Video
+Item Width: 1280
+Item Height: 534
+Item ImageTags Primary: cd04533c1e467a698339631a29af7559
+Server Name: OatmanEmbyServer
+Server Id: cdeedde7f9734edab1d8acd4c43b01cd
+Server Version: 4.8.11.0
+Session RemoteEndPoint: 192.168.50.40
+Session Client: AndroidTv
+Session DeviceName: LivingRoom
+Session DeviceId: eea86403e026a93d
+Session ApplicationVersion: 2.1.23g
+Session Id: 40d36db4c9959705944877a5f4faea89
+PlaybackInfo PositionTicks: 83050000
+PlaybackInfo PlaylistIndex: 2
+PlaybackInfo PlaylistLength: 3
+PlaybackInfo PlaySessionId: c8ccc2b4b854473699d8da47742e0fae
+
+Webhook received:
+
+Title: Bill has finished playing 1917 on LivingRoom
+Description: Tuesday, March 25, 2025 2:48 PM
+Date: 3/25/2025 6:48:43 PM
+Event: playback.stop
+User Name: Bill
+User Id: d063f08a14564602852a2d932adf2d23
+Item Name: 1917
+Item ServerId: cdeedde7f9734edab1d8acd4c43b01cd
+Item Id: 1355704
+Item DateCreated: 3/14/2020 9:36:26 PM
+Item Container: mp4
+Item SortName: 1917
+Item Path: F:\Movies\1917 (2019)..mp4
+Item RunTimeTicks: 71382150000
+Item Size: 1144665965
+Item FileName: 1917 (2019)..mp4
+Item Bitrate: 1282859
+Item IsFolder: False
+Item Type: Movie
+Item PrimaryImageAspectRatio: 0.6666666666666666
+Item MediaType: Video
+Item Width: 1280
+Item Height: 534
+Item ImageTags Primary: cd04533c1e467a698339631a29af7559
+Server Name: OatmanEmbyServer
+Server Id: cdeedde7f9734edab1d8acd4c43b01cd
+Server Version: 4.8.11.0
+Session RemoteEndPoint: 192.168.50.40
+Session Client: AndroidTv
+Session DeviceName: LivingRoom
+Session DeviceId: eea86403e026a93d
+Session ApplicationVersion: 2.1.23g
+Session Id: 40d36db4c9959705944877a5f4faea89
+PlaybackInfo PositionTicks: 146250000
+PlaybackInfo PlaylistIndex: 0
+PlaybackInfo PlaylistLength: 0
+PlaybackInfo PlaySessionId: c8ccc2b4b854473699d8da47742e0fae
