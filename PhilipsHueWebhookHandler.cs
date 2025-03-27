@@ -1,5 +1,6 @@
 using System.Net;
 using System.Text.Json;
+using Q42.HueApi;
 
 namespace PhilipsHueWebhookHandler
 {
@@ -42,6 +43,15 @@ namespace PhilipsHueWebhookHandler
                 if (arg == "-discover")
                 {
                     await BridgeController.DiscoverBridges().ConfigureAwait(false);
+                    Console.WriteLine("");
+                    Console.WriteLine("Hit enter to continue");
+                    Console.ReadLine();
+                    return;
+                }
+
+                if (arg == "-listscenes")
+                {
+                    await BridgeController.GetScenes("192.168.50.204", "8fLBDiVmqfRkZxqEZgOSJ4xPHAzjf8FqsnT1loay").ConfigureAwait(false);
                     Console.WriteLine("");
                     Console.WriteLine("Hit enter to continue");
                     Console.ReadLine();

@@ -86,5 +86,25 @@ namespace PhilipsHueWebhookHandler
         {
             return _bridgeIp;
         }
+
+        public static async Task GetScenes(string bridgeIp, string appKey)
+        {
+            var client = new LocalHueClient(bridgeIp);
+            client.Initialize(appKey);
+
+            try
+            {
+                var scenes = await client.GetScenesAsync().ConfigureAwait(false);
+                Utility.ConsoleWithLog($"Scenes available on the bridge at {bridgeIp}:");
+                foreach (var scene in scenes)
+                {
+                    Utility.ConsoleWithLog($"{scene.Name}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Utility.ConsoleWithLog($"Error: {ex.Message}");
+            }
+        }
     }
 }
