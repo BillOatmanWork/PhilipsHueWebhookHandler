@@ -1,6 +1,5 @@
 using System.Net;
 using System.Text.Json;
-using Q42.HueApi;
 
 namespace PhilipsHueWebhookHandler
 {
@@ -9,6 +8,7 @@ namespace PhilipsHueWebhookHandler
         static async Task Main(string[] args)
         {
             bool run = false;
+            string configFilePath;
 
             File.Delete("PhilipsHueWebhookHandler.log");
 
@@ -34,7 +34,7 @@ namespace PhilipsHueWebhookHandler
 
             foreach (string arg in args)
             {
-                if (arg == "-?")
+                if (arg == "-?" || arg.ToLower() == "-h" || arg.ToLower() == "-help")
                 {
                     DisplayHelp();
                     return;
@@ -105,10 +105,16 @@ namespace PhilipsHueWebhookHandler
 
                 switch (arg.Substring(0, arg.IndexOf('=')).ToLower())
                 {
-                    case "-h":
-                    case "-help":
-                        DisplayHelp();
-                        return;
+                    case "-run":
+                        configFilePath = arg.Substring(arg.IndexOf('=') + 1);
+                        if (Configuration.LoadConfig(configFilePath) == false)
+                        {
+                            Utility.ConsoleWithLog("Error loading configuration file.");
+                            return;
+                        }
+
+                        run = true;
+                        break;
 
                     default:
                         Utility.ConsoleWithLog("Unknown parameter: " + arg);
@@ -121,7 +127,13 @@ namespace PhilipsHueWebhookHandler
                 return;
             }
 
-            BridgeController.InitializeAsync("", "");
+            if (Configuration.Config?.BridgeIP == null || Configuration.Config?.Key == null)
+            {
+                Utility.ConsoleWithLog("Configuration is missing BridgeIP or Key.");
+                return;
+            }
+
+            BridgeController.InitializeAsync(Configuration.Config.BridgeIP, Configuration.Config.Key);
 
             var listener = new HttpListener();
             listener.Prefixes.Add("http://localhost:8080/webhook/");
@@ -131,7 +143,6 @@ namespace PhilipsHueWebhookHandler
 
             while (true)
             {
-                // Wait for a request
                 var context = listener.GetContext();
 
                 if (context.Request.HttpMethod == "POST")
@@ -143,9 +154,67 @@ namespace PhilipsHueWebhookHandler
                     {
                         var webhookData = JsonSerializer.Deserialize<Root>(payload);
                         if (webhookData is null)
+                        {
                             Utility.ConsoleWithLog("Deserialized to null payload.");
+                            break;
+                        }
+
+                        PayloadDump.DumpPayload(webhookData);
+
+                        string user = webhookData.User.Name;
+                        string device = webhookData.Session.DeviceName;
+                        string playbackEvent = webhookData.Event;
+                        bool success = false;
+
+                        Device? userConfig = Configuration.GetUserConfig(user, device);
+
+                        if(userConfig is not null)
+                        {
+                            if(Configuration.Config.LogLevel == "Detail")
+                            {
+                                Utility.ConsoleWithLog($"User: {user} Device: {device} Event: {playbackEvent}");
+                            }                        
+
+                            switch (playbackEvent)
+                            {
+                                case "playback.start":
+                                    if (userConfig.PlayScene != null)
+                                    {
+                                        success = await BridgeController.SetScene(userConfig.PlayScene).ConfigureAwait(false);
+                                    }
+                                    break;
+
+                                case "playback.stop":
+                                    if (userConfig.StopScene != null)
+                                    {
+                                        success = await BridgeController.SetScene(userConfig.StopScene).ConfigureAwait(false);
+                                    }
+                                    break;
+
+                                case "playback.pause":
+                                    if (userConfig.PauseScene != null)
+                                    {
+                                        success = await BridgeController.SetScene(userConfig.PauseScene).ConfigureAwait(false);
+                                    }
+                                    break;
+
+                                default:
+                                    Utility.ConsoleWithLog($"Unknown playback event: {playbackEvent}");
+                                    break;
+                            }
+                        }
                         else
-                            PayloadDump.DumpPayload(webhookData);
+                        {
+                            Utility.ConsoleWithLog($"User {user} or device {device} not found in configuration.");
+                        }
+
+                        if (Configuration.Config.LogLevel == "Detail")
+                        {
+                            if(success)
+                                Utility.ConsoleWithLog("Successful");
+                            else
+                                Utility.ConsoleWithLog("Failed");
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -166,35 +235,11 @@ namespace PhilipsHueWebhookHandler
         private static void DisplayHelp()
         {
             Utility.ConsoleWithLog("Parameters: (Case Insensitive)");
-            Utility.ConsoleWithLog("\tUser = PD user name.");
-            Utility.ConsoleWithLog("\tPass = PD password.");
-            Utility.ConsoleWithLog("\tLocale = The case sensitive LanguageCode-CountryCode to use for the guide data. Default is the locale of the computer. Currently supported are en-US, en-GB, and de-DE. Others by request.");
-            Utility.ConsoleWithLog("\tnflLength = Length of time to use, in hours, for NFL games.  Used to calculate stop time.  Default 4.");
-            Utility.ConsoleWithLog("\tncaafLength = Length of time to use, in hours, for NCAA football games.  Used to calculate stop time.  Default 4.");
-            Utility.ConsoleWithLog("\tncaabLength = Length of time to use, in hours, for NCAA basketball games.  Used to calculate stop time.  Default 3.");
-            Utility.ConsoleWithLog("\tncaawLength = Length of time to use, in hours, for NCAA Womens basketball games.  Used to calculate stop time.  Default 3.");
-            Utility.ConsoleWithLog("\tnhlLength = Length of time to use, in hours, for NHL/ECHL games.  Used to calculate stop time.  Default 3.");
-            Utility.ConsoleWithLog("\tnbaLength = Length of time to use, in hours, for NBA games.  Used to calculate stop time.  Default 3.");
-            Utility.ConsoleWithLog("\twnbaLength = Length of time to use, in hours, for WNBA games.  Used to calculate stop time.  Default 3.");
-            Utility.ConsoleWithLog("\tmlbLength = Length of time to use, in hours, for MLB games.  Used to calculate stop time.  Default 4.");
-            Utility.ConsoleWithLog("\tppvLength = Length of time to use, in hours, for PPV events.  Used to calculate stop time.  Default 5.");
-            Utility.ConsoleWithLog("\tmlsLength = Length of time to use, in hours, for MLS games.  Used to calculate stop time.  Default 3.");
-            Utility.ConsoleWithLog("\tnwslLength = Length of time to use, in hours, for NWSL games.  Used to calculate stop time.  Default 3.");
-            Utility.ConsoleWithLog("\tuse12Hour = Use 12 hour format when putting times in desciptions.  Default 24 hour format.");
-            Utility.ConsoleWithLog("\tisDST = Assume daylight savings time is in effect.  Default use operating system flag.");
-            Utility.ConsoleWithLog("\tisNotDST = Assume daylight savings time is not in effect.  Default use operating system flag.");
-            Utility.ConsoleWithLog("\tShortDesc = Do not put the localized date and time in EPG descriptions.");
-            Utility.ConsoleWithLog("\tDumpM3U = Optional - The full path and filename of the file you wish to save the m3u data.");
-            Utility.ConsoleWithLog("\tDumpXmltv = Optional - The full path and filename of the file you wish to save the xmltv data.");
-            Utility.ConsoleWithLog("\tUseTabs = Optional - Use tabs instead of spaces when generating NHL stats in the EPG description.");
-            Utility.ConsoleWithLog("\tUseMetric = Optional - Use metric usits for weather instead of the default imperial units.");
-            Utility.ConsoleWithLog("\tRetryTennis = Optional - Retry tennis plus channels that report no data. Default no retries.  Note this will cause a significant slow down.");
-            Utility.ConsoleWithLog("\tDisableEmoji = Optional - Disable the use of emoji in the guide data.");
-            Utility.ConsoleWithLog("\tNoLog = Optional - Do not log activity.");
-            Utility.ConsoleWithLog("\tOddsApiKey = Optional - Free X-RapidAPI-Key from https://rapidapi.com/theoddsapi/api/live-sports-odds/ if you want the current money line in the description.");
-            Utility.ConsoleWithLog("\tUseCustomLogos = Optional - Use generated cusTOM logo icons for game chnnels.  Read PDF for how to configure.");
-            Utility.ConsoleWithLog("\tGuide = Optional - Create PDF with all of the guide data.");
-            Utility.ConsoleWithLog("\tMoneyLine = Optional - Create PDF with all of the moneyline betting information.");
+            Utility.ConsoleWithLog("\t-Discover  List all Hue Bridges on your network.");
+            Utility.ConsoleWithLog("\t-AutoRegister  Register this applicaiton with the bridge. Note only works is there is only 1 bringe on your network.");
+            Utility.ConsoleWithLog("\t-Register=<Bridge IP Address> Register this application on the specified bridge.");
+            Utility.ConsoleWithLog("\t-ListScenes List all scenes on the bridge.");
+            Utility.ConsoleWithLog("\t-Run=<Config JSON file path> Run using the specified config file.");
             Utility.ConsoleWithLog("\tNote:  No spaces before or after the =, so for example -user=IamTheUser.");
             Utility.ConsoleWithLog("");
             Utility.ConsoleWithLog("");

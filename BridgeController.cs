@@ -1,6 +1,8 @@
 using Q42.HueApi;
 using Q42.HueApi.Interfaces;
+using Q42.HueApi.Models;
 using Q42.HueApi.Models.Bridge;
+using Q42.HueApi.Models.Groups;
 
 // https://github.com/michielpost/Q42.HueApi/blob/master/src/HueApi.ConsoleSample/Program.cs
 
@@ -11,7 +13,8 @@ namespace PhilipsHueWebhookHandler
         private static string? _bridgeIp;
         private static string? _key;
         private static ILocalHueClient? _client;
-        private static readonly string appName = "EmbyHueHandler";
+        private const string _appName = "EmbyHueHandler";
+        private static List<Scene> _scenes = new List<Scene>();
 
         public static void InitializeAsync(string ip, string key)
         {
@@ -58,7 +61,7 @@ namespace PhilipsHueWebhookHandler
 
             try
             {
-                string? appKey = await client.RegisterAsync(appName, "EmbyServer").ConfigureAwait(false);
+                string? appKey = await client.RegisterAsync(_appName, "EmbyServer").ConfigureAwait(false);
                 if (appKey == null)
                 {
                     throw new InvalidOperationException($"Failed to register with the bridge at {bridgeIp}.");
@@ -95,8 +98,10 @@ namespace PhilipsHueWebhookHandler
             try
             {
                 var scenes = await client.GetScenesAsync().ConfigureAwait(false);
+                _scenes = scenes.ToList();
+
                 Utility.ConsoleWithLog($"Scenes available on the bridge at {bridgeIp}:");
-                foreach (var scene in scenes)
+                foreach (var scene in _scenes)
                 {
                     Utility.ConsoleWithLog($"{scene.Name}");
                 }
@@ -105,6 +110,22 @@ namespace PhilipsHueWebhookHandler
             {
                 Utility.ConsoleWithLog($"Error: {ex.Message}");
             }
+        }
+
+        public static async Task<bool> SetScene(string sceneName)
+        {
+            if (_client is not null)
+            {
+                var scene = _scenes.FirstOrDefault(s => s.Name.Equals(sceneName, StringComparison.OrdinalIgnoreCase));
+
+                if (scene is not null)
+                {
+                    HueResults result = await _client.RecallSceneAsync(scene.Id).ConfigureAwait(false);
+                    return !result.HasErrors();
+                }
+            }
+
+            return false;
         }
     }
 }

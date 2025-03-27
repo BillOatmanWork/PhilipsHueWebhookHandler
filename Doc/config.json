@@ -1,0 +1,29 @@
+{
+	"Description":	"Only Bridge",
+	"BridgeIP":		"192.168.50.204",
+	"Key":			"8fLBDiVmqfRkZxqEZgOSJ4xPHAzjf8FqsnT1loay",
+	"Timezone":		"Eastern",
+	"LogLevel":		"Detail",
+	"Users": [
+		{
+			"Name":				"Bill",
+			"TransitionTime":	5
+			"Devices":	[
+				{
+					"Name":				"LivingRoom",
+					"IgnoreDaytime":	true,
+					"PlayScene":		"Main Play",
+					"PauseScene":		"Main Pause",
+					"StopScene":		"Main Stop"
+				},
+				{
+					"Name":				"BedRoom",
+					"IgnoreDaytime":	true,
+					"PlayScene":		"Bedroom Play",
+					"PauseScene":		"Bedroom Pause",
+					"StopScene":		"Bedroom Stop"
+				}
+			]
+		}
+	]
+}
