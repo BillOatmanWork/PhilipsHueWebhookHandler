@@ -11,6 +11,7 @@ namespace PhilipsHueWebhookHandler
         private static string? _bridgeIp;
         private static string? _key;
         private static ILocalHueClient? _client;
+        private static readonly string appName = "EmbyHueHandler";
 
         public static void InitializeAsync(string ip, string key)
         {
@@ -52,18 +53,20 @@ namespace PhilipsHueWebhookHandler
         {
             ILocalHueClient client = new LocalHueClient(bridgeIp);
 
-            Console.WriteLine($"Press the button on your Hue Bridge at {bridgeIp}, then press Enter...");
+            Console.WriteLine($"Press the button on your Hue Bridge at {bridgeIp}, then press Enter to register ...");
             Console.ReadLine();
 
             try
             {
-                string? appKey = await client.RegisterAsync("EmbyPhilipsHueWebhookHandler", "EmbyServer").ConfigureAwait(false);
+                string? appKey = await client.RegisterAsync(appName, "EmbyServer").ConfigureAwait(false);
                 if (appKey == null)
                 {
                     throw new InvalidOperationException($"Failed to register with the bridge at {bridgeIp}.");
                 }
 
                 Console.WriteLine($"App registered successfully! Your app key: {appKey}");
+                Console.WriteLine("Your app key is stored in Keys.txt");
+                Console.WriteLine("");
 
                 using (StreamWriter file = File.AppendText("Keys.txt"))
                 {

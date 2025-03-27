@@ -86,6 +86,10 @@ namespace PhilipsHueWebhookHandler
                         Utility.ConsoleWithLog($"Failed to register with the bridge at {bridgeIp}.");
                     }
 
+                    Console.WriteLine("");
+                    Console.WriteLine("Hit enter to continue");
+                    Console.ReadLine();
+
                     return;
                 }
 
