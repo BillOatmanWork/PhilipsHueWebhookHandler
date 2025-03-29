@@ -6,8 +6,7 @@
 	"LogLevel":		"Detail",
 	"Users": [
 		{
-			"Name":				"Bill",
-			"TransitionTime":	5
+			"Name":	"Bill",
 			"Devices":	[
 				{
 					"Name":				"LivingRoom",

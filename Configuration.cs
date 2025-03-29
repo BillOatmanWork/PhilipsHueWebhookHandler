@@ -58,7 +58,6 @@ namespace PhilipsHueWebhookHandler
     public class Device
     {
         public string? Name { get; set; }
-        public int TransitionTime { get; set; }
         public bool? IgnoreDaytime { get; set; }
         public string? PlayScene { get; set; }
         public string? PauseScene { get; set; }

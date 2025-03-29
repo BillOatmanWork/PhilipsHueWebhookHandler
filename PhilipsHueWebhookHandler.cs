@@ -1,5 +1,6 @@
 using System.Net;
 using System.Text.Json;
+using Q42.HueApi;
 
 namespace PhilipsHueWebhookHandler
 {
@@ -116,6 +117,23 @@ namespace PhilipsHueWebhookHandler
                         run = true;
                         break;
 
+                    case "-register":
+                        string ip = arg.Substring(arg.IndexOf('=') + 1);
+                        bool success = await BridgeController.RegisterWithBridge(ip).ConfigureAwait(false);
+                        if (success)
+                        {
+                            Utility.ConsoleWithLog($"Successfully registered with the bridge at {ip}.");
+                        }
+                        else
+                        {
+                            Utility.ConsoleWithLog($"Failed to register with the bridge at {ip}.");
+                        }
+
+                        Console.WriteLine("");
+                        Console.WriteLine("Hit enter to continue");
+                        Console.ReadLine();
+                        break;
+
                     default:
                         Utility.ConsoleWithLog("Unknown parameter: " + arg);
                         return;
@@ -155,7 +173,7 @@ namespace PhilipsHueWebhookHandler
                         var webhookData = JsonSerializer.Deserialize<Root>(payload);
                         if (webhookData is null)
                         {
-                            Utility.ConsoleWithLog("Deserialized to null payload.");
+                            Utility.ConsoleWithLog("Webhook payload deserialized to null object.");
                             break;
                         }
 
@@ -173,7 +191,7 @@ namespace PhilipsHueWebhookHandler
                             if(Configuration.Config.LogLevel == "Detail")
                             {
                                 Utility.ConsoleWithLog($"User: {user} Device: {device} Event: {playbackEvent}");
-                            }                        
+                            }
 
                             switch (playbackEvent)
                             {
