@@ -4,15 +4,14 @@ using System.Text.Json.Serialization;
 
 namespace PhilipsHueWebhookHandler
 {
-    public class DaylightChecker
+    public static class DaylightChecker
     {
         private const string SunriseSunsetApiUrlTemplate = "https://api.sunrise-sunset.org/json?lat={0}&lng={1}&formatted=0";
 
-        public async Task<bool> IsDaylightAsync(double latitude, double longitude)
+        public static async Task<bool> IsDaylightAsync(double latitude, double longitude)
         {
             try
             {
-                // Call Sunrise-Sunset API
                 var apiUrl = string.Format(CultureInfo.InvariantCulture, SunriseSunsetApiUrlTemplate, latitude, longitude);
                 using (HttpClient client = new HttpClient())
                 {
@@ -39,7 +38,6 @@ namespace PhilipsHueWebhookHandler
             }
         }
 
-        // Sunrise-Sunset API response model
         private class SunriseSunsetResponse
         {
             [JsonPropertyName("results")]

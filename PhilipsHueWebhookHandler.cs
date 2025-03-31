@@ -1,6 +1,5 @@
 using System.Net;
 using System.Text.Json;
-using Q42.HueApi;
 
 namespace PhilipsHueWebhookHandler
 {
@@ -9,6 +8,7 @@ namespace PhilipsHueWebhookHandler
         static async Task Main(string[] args)
         {
             bool run = false;
+            bool considerDaylight = false;
             string configFilePath;
 
             File.Delete("PhilipsHueWebhookHandler.log");
@@ -112,6 +112,16 @@ namespace PhilipsHueWebhookHandler
                         {
                             Utility.ConsoleWithLog("Error loading configuration file.");
                             return;
+                        }
+
+                        if (Configuration.Config == null || Configuration.Config.Latitude == 0 || Configuration.Config.Longitude == 0)
+                        {
+                            Utility.ConsoleWithLog("No latitude/longitude detected. Lights will always be controllled.");
+                        }
+                        else
+                        {
+                            considerDaylight = true;
+                          //  bool isDaylight = await DaylightChecker.IsDaylightAsync(Configuration.Config.Latitude, Configuration.Config.Longitude).ConfigureAwait(false);
                         }
 
                         run = true;
