@@ -50,7 +50,8 @@ namespace PhilipsHueWebhookHandler
         public string? Description { get; set; }
         public string? BridgeIP { get; set; }
         public string? Key { get; set; }
-        public string? Timezone { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
         public string? LogLevel { get; set; }
         public List<EmbyUser>? Users { get; set; }
     }

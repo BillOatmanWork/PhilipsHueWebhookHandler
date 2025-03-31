@@ -2,7 +2,8 @@
 	"Description":	"Only Bridge",
 	"BridgeIP":		"192.168.50.204",
 	"Key":			"8fLBDiVmqfRkZxqEZgOSJ4xPHAzjf8FqsnT1loay",
-	"Timezone":		"Eastern",
+	"Latitude":		42.988103266257895,
+	"Longitude":	-77.5870864461733,
 	"LogLevel":		"Detail",
 	"Users": [
 		{
