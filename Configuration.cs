@@ -62,6 +62,7 @@ namespace PhilipsHueWebhookHandler
         public bool? IgnoreDaytime { get; set; }
         public string? PlayScene { get; set; }
         public string? PauseScene { get; set; }
+        public string? UnPauseScene { get; set; }
         public string? StopScene { get; set; }
     }
 

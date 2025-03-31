@@ -168,6 +168,7 @@ namespace PhilipsHueWebhookHandler
             listener.Start();
 
             Utility.ConsoleWithLog("Webhook endpoint is running on http://localhost:8080/webhook/");
+            Utility.ConsoleWithLog($"LogLevel: {Configuration.Config.LogLevel}");
 
             while (true)
             {
@@ -187,12 +188,14 @@ namespace PhilipsHueWebhookHandler
                             break;
                         }
 
-                        PayloadDump.DumpPayload(webhookData);
+                        if (Configuration.Config.LogLevel == "Detail")
+                            PayloadDump.DumpPayload(webhookData);
 
                         string user = webhookData.User.Name;
                         string device = webhookData.Session.DeviceName;
                         string playbackEvent = webhookData.Event;
                         bool success = false;
+                        string sceneName = string.Empty;
 
                         Device? userConfig = Configuration.GetUserConfig(user, device);
 
@@ -208,21 +211,32 @@ namespace PhilipsHueWebhookHandler
                                 case "playback.start":
                                     if (userConfig.PlayScene != null)
                                     {
-                                        success = await BridgeController.SetScene(userConfig.PlayScene).ConfigureAwait(false);
+                                        sceneName = userConfig.PlayScene;
+                                        success = await BridgeController.SetScene(sceneName, Configuration.Config.LogLevel).ConfigureAwait(false);
                                     }
                                     break;
 
                                 case "playback.stop":
                                     if (userConfig.StopScene != null)
                                     {
-                                        success = await BridgeController.SetScene(userConfig.StopScene).ConfigureAwait(false);
+                                        sceneName = userConfig.StopScene;
+                                        success = await BridgeController.SetScene(sceneName, Configuration.Config.LogLevel).ConfigureAwait(false);
                                     }
                                     break;
 
                                 case "playback.pause":
                                     if (userConfig.PauseScene != null)
                                     {
-                                        success = await BridgeController.SetScene(userConfig.PauseScene).ConfigureAwait(false);
+                                        sceneName = userConfig.PauseScene;
+                                        success = await BridgeController.SetScene(sceneName, Configuration.Config.LogLevel).ConfigureAwait(false);
+                                    }
+                                    break;
+
+                                case "playback.unpause":
+                                    if (userConfig.PauseScene != null)
+                                    {
+                                        sceneName = userConfig.UnPauseScene;
+                                        success = await BridgeController.SetScene(sceneName, Configuration.Config.LogLevel).ConfigureAwait(false);
                                     }
                                     break;
 
@@ -239,9 +253,9 @@ namespace PhilipsHueWebhookHandler
                         if (Configuration.Config.LogLevel == "Detail")
                         {
                             if(success)
-                                Utility.ConsoleWithLog("Successful");
+                                Utility.ConsoleWithLog($"Scene {sceneName} set successfully.");
                             else
-                                Utility.ConsoleWithLog("Failed");
+                                Utility.ConsoleWithLog($"Scene {sceneName} set failed.");
                         }
                     }
                     catch (Exception ex)

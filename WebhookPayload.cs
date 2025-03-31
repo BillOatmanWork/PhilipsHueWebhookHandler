@@ -88,6 +88,7 @@ namespace PhilipsHueWebhookHandler
     {
         public static void DumpPayload(Root payload)
         {
+            Utility.ConsoleWithLog("");
             Utility.ConsoleWithLog("Payload Dump: ");
             Utility.ConsoleWithLog("");
 

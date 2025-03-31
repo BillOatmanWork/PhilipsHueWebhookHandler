@@ -36,7 +36,7 @@ namespace PhilipsHueWebhookHandler
 
             if (bridges.Any())
             {
-                if(fromRegisterWithBridge == true && bridges.Count() == 1)
+                if (fromRegisterWithBridge == true && bridges.Count() == 1)
                     _bridgeIp = bridges.First().IpAddress;
 
                 foreach (var bridge in bridges)
@@ -112,16 +112,46 @@ namespace PhilipsHueWebhookHandler
             }
         }
 
-        public static async Task<bool> SetScene(string sceneName)
+        public static async Task<bool> SetScene(string sceneName, string logLevel)
         {
             if (_client is not null)
             {
+                if(_scenes.Count == 0)
+                {
+                    var scenes = await _client.GetScenesAsync().ConfigureAwait(false);
+                    _scenes = scenes.ToList();
+                }
+
                 var scene = _scenes.FirstOrDefault(s => s.Name.Equals(sceneName, StringComparison.OrdinalIgnoreCase));
+                if (scene == null)
+                {
+                    Utility.ConsoleWithLog($"Scene {sceneName} not found on the bridge.");
+                    return false;
+                }
+
+                if (logLevel == "Detail")
+                    Utility.ConsoleWithLog($"SetScene: Scene: {sceneName}");
 
                 if (scene is not null)
                 {
                     HueResults result = await _client.RecallSceneAsync(scene.Id).ConfigureAwait(false);
-                    return !result.HasErrors();
+                    if (!result.HasErrors())
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        if (logLevel == "Detail")
+                        {
+                            Utility.ConsoleWithLog($"Error(s) setting scene {sceneName}: ");
+                            foreach (var error in result.Errors)
+                            {
+                                Utility.ConsoleWithLog($"Error: {error.Error!.Description}");
+                            }
+                        }
+
+                        return false;
+                    }
                 }
             }
 
