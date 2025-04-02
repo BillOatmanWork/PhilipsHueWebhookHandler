@@ -112,8 +112,20 @@ namespace PhilipsHueWebhookHandler
             }
         }
 
-        public static async Task<bool> SetScene(string sceneName, string logLevel)
+        public static async Task<bool> SetScene(string sceneName, string logLevel, bool considerDaylight)
         {
+            if (considerDaylight is true && Configuration.Config is not null && Configuration.Config.Latitude != 0 && Configuration.Config.Longitude != 0)
+            {
+                bool isDaylight = await DaylightChecker.IsDaylightAsync(Configuration.Config.Latitude, Configuration.Config.Longitude).ConfigureAwait(false);
+                if (isDaylight)
+                {
+                    if (logLevel == "Detail")
+                        Utility.ConsoleWithLog("SetScene: Scene not set due to it being daylight.");
+                }
+
+                return false;
+            }
+
             if (_client is not null)
             {
                 if(_scenes.Count == 0)

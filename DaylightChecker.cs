@@ -7,29 +7,39 @@ namespace PhilipsHueWebhookHandler
     public static class DaylightChecker
     {
         private const string SunriseSunsetApiUrlTemplate = "https://api.sunrise-sunset.org/json?lat={0}&lng={1}&formatted=0";
+        private static DateTime? lastFetchTime;
+        private static DateTime sunrise;
+        private static DateTime sunset;
 
         public static async Task<bool> IsDaylightAsync(double latitude, double longitude)
         {
             try
             {
-                var apiUrl = string.Format(CultureInfo.InvariantCulture, SunriseSunsetApiUrlTemplate, latitude, longitude);
-                using (HttpClient client = new HttpClient())
+                if (!lastFetchTime.HasValue || (DateTime.UtcNow - lastFetchTime.Value).TotalHours >= 24)
                 {
-                    var response = await client.GetStringAsync(apiUrl).ConfigureAwait(false);
-                    var jsonResponse = JsonSerializer.Deserialize<SunriseSunsetResponse>(response);
-
-                    if (jsonResponse?.Results == null)
+                    // Fetch new data if it's the first time or more than 24 hours since the last fetch
+                    var apiUrl = string.Format(CultureInfo.InvariantCulture, SunriseSunsetApiUrlTemplate, latitude, longitude);
+                    using (HttpClient client = new HttpClient())
                     {
-                        throw new InvalidOperationException("Invalid response from Sunrise-Sunset API.");
+                        var response = await client.GetStringAsync(apiUrl).ConfigureAwait(false);
+                        var jsonResponse = JsonSerializer.Deserialize<SunriseSunsetResponse>(response);
+
+                        if (jsonResponse?.Results == null)
+                        {
+                            throw new InvalidOperationException("Invalid response from Sunrise-Sunset API.");
+                        }
+
+                        // Parse and cache sunrise and sunset times
+                        sunrise = DateTime.Parse(jsonResponse.Results.Sunrise, CultureInfo.InvariantCulture);
+                        sunset = DateTime.Parse(jsonResponse.Results.Sunset, CultureInfo.InvariantCulture);
+                        lastFetchTime = DateTime.UtcNow; // Update the fetch timestamp
                     }
-
-                    var sunrise = DateTime.Parse(jsonResponse.Results.Sunrise, CultureInfo.InvariantCulture);
-                    var sunset = DateTime.Parse(jsonResponse.Results.Sunset, CultureInfo.InvariantCulture);
-                    var currentTime = DateTime.UtcNow;
-
-                    // Return true if the current UTC time is between sunrise and sunset
-                    return currentTime >= sunrise && currentTime <= sunset;
                 }
+
+                var currentTime = DateTime.UtcNow;
+
+                // Return true if the current UTC time is between cached sunrise and sunset
+                return currentTime >= sunrise && currentTime <= sunset;
             }
             catch (Exception ex)
             {

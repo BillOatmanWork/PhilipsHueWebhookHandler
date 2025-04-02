@@ -1,26 +1,28 @@
 {
 	"Description":	"Only Bridge",
-	"BridgeIP":		"192.168.50.204",
-	"Key":			"8fLBDiVmqfRkZxqEZgOSJ4xPHAzjf8FqsnT1loay",
-	"Latitude":		42.988103266257895,
-	"Longitude":	-77.5870864461733,
-	"LogLevel":		"Detail",
+	"BridgeIP":		"192.168.xxx.xxx",
+	"Key":			"Bridge Key",
+	"Latitude":		38.897957,
+	"Longitude":	-77.036560,
+	"LogLevel":		"Info",
 	"Users": [
 		{
-			"Name":	"Bill",
+			"Name":	"Bozo",
 			"Devices":	[
 				{
 					"Name":				"LivingRoom",
-					"IgnoreDaytime":	true,
+					"IgnoreDaytime":	false,
 					"PlayScene":		"Main Play",
 					"PauseScene":		"Main Pause",
+					"UnPauseScene":		"Main Play",
 					"StopScene":		"Main Stop"
 				},
 				{
 					"Name":				"BedRoom",
-					"IgnoreDaytime":	true,
+					"IgnoreDaytime":	false,
 					"PlayScene":		"Bedroom Play",
 					"PauseScene":		"Bedroom Pause",
+					"UnPauseScene":		"Main Play",
 					"StopScene":		"Bedroom Stop"
 				}
 			]

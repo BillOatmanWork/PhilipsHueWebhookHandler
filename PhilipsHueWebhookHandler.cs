@@ -1,4 +1,6 @@
+using System.Diagnostics;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 
 namespace PhilipsHueWebhookHandler
@@ -114,14 +116,13 @@ namespace PhilipsHueWebhookHandler
                             return;
                         }
 
-                        if (Configuration.Config == null || Configuration.Config.Latitude == 0 || Configuration.Config.Longitude == 0)
+                        if (Configuration.Config is null || Configuration.Config.Latitude == 0 || Configuration.Config.Longitude == 0)
                         {
-                            Utility.ConsoleWithLog("No latitude/longitude detected. Lights will always be controllled.");
+                            Utility.ConsoleWithLog("No latitude/longitude detected.");
                         }
                         else
                         {
                             considerDaylight = true;
-                          //  bool isDaylight = await DaylightChecker.IsDaylightAsync(Configuration.Config.Latitude, Configuration.Config.Longitude).ConfigureAwait(false);
                         }
 
                         run = true;
@@ -212,7 +213,6 @@ namespace PhilipsHueWebhookHandler
                                     if (userConfig.PlayScene != null)
                                     {
                                         sceneName = userConfig.PlayScene;
-                                        success = await BridgeController.SetScene(sceneName, Configuration.Config.LogLevel).ConfigureAwait(false);
                                     }
                                     break;
 
@@ -220,7 +220,6 @@ namespace PhilipsHueWebhookHandler
                                     if (userConfig.StopScene != null)
                                     {
                                         sceneName = userConfig.StopScene;
-                                        success = await BridgeController.SetScene(sceneName, Configuration.Config.LogLevel).ConfigureAwait(false);
                                     }
                                     break;
 
@@ -228,15 +227,13 @@ namespace PhilipsHueWebhookHandler
                                     if (userConfig.PauseScene != null)
                                     {
                                         sceneName = userConfig.PauseScene;
-                                        success = await BridgeController.SetScene(sceneName, Configuration.Config.LogLevel).ConfigureAwait(false);
                                     }
                                     break;
 
                                 case "playback.unpause":
-                                    if (userConfig.PauseScene != null)
+                                    if (userConfig.UnPauseScene != null)
                                     {
                                         sceneName = userConfig.UnPauseScene;
-                                        success = await BridgeController.SetScene(sceneName, Configuration.Config.LogLevel).ConfigureAwait(false);
                                     }
                                     break;
 
@@ -244,18 +241,38 @@ namespace PhilipsHueWebhookHandler
                                     Utility.ConsoleWithLog($"Unknown playback event: {playbackEvent}");
                                     break;
                             }
+
+                            if(!string.IsNullOrEmpty(sceneName))
+                            {
+                                string logLevel = Configuration.Config?.LogLevel ?? "DefaultLogLevel";
+                               
+                                if (considerDaylight == true && userConfig.IgnoreDaytime == false)
+                                {
+                                    success = await BridgeController.SetScene(sceneName, logLevel, false).ConfigureAwait(false);
+                                }
+                                else
+                                {
+                                    success = await BridgeController.SetScene(sceneName, logLevel, true).ConfigureAwait(false);
+                                }
+                            }
                         }
                         else
                         {
                             Utility.ConsoleWithLog($"User {user} or device {device} not found in configuration.");
                         }
 
-                        if (Configuration.Config.LogLevel == "Detail")
+                        if (Configuration.Config?.LogLevel == "Detail")
                         {
-                            if(success)
+                            if (success)
+                            {
                                 Utility.ConsoleWithLog($"Scene {sceneName} set successfully.");
+                            }
                             else
-                                Utility.ConsoleWithLog($"Scene {sceneName} set failed.");
+                            {
+                                bool isDaylight = await DaylightChecker.IsDaylightAsync(Configuration.Config.Latitude, Configuration.Config.Longitude).ConfigureAwait(false);
+                                if (isDaylight is false)
+                                    Utility.ConsoleWithLog($"Scene {sceneName} set failed.");
+                            }
                         }
                     }
                     catch (Exception ex)
