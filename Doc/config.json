@@ -11,7 +11,7 @@
 			"Devices":	[
 				{
 					"Name":				"LivingRoom",
-					"IgnoreDaytime":	false,
+					"DaytimeOverride":	false,
 					"PlayScene":		"Main Play",
 					"PauseScene":		"Main Pause",
 					"UnPauseScene":		"Main Play",
@@ -19,7 +19,7 @@
 				},
 				{
 					"Name":				"BedRoom",
-					"IgnoreDaytime":	false,
+					"DaytimeOverride":	false,
 					"PlayScene":		"Bedroom Play",
 					"PauseScene":		"Bedroom Pause",
 					"UnPauseScene":		"Main Play",

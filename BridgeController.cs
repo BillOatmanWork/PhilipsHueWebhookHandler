@@ -116,11 +116,19 @@ namespace PhilipsHueWebhookHandler
         {
             if (considerDaylight is true && Configuration.Config is not null && Configuration.Config.Latitude != 0 && Configuration.Config.Longitude != 0)
             {
-                bool isDaylight = await DaylightChecker.IsDaylightAsync(Configuration.Config.Latitude, Configuration.Config.Longitude).ConfigureAwait(false);
-                if (isDaylight)
+                try
                 {
-                    if (logLevel == "Detail")
-                        Utility.ConsoleWithLog("SetScene: Scene not set due to it being daylight.");
+                    bool isDaylight = await DaylightChecker.IsDaylightAsync(Configuration.Config.Latitude, Configuration.Config.Longitude).ConfigureAwait(false);
+                    if (isDaylight)
+                    {
+                        if (logLevel.ToLower() == "detail")
+                            Utility.ConsoleWithLog("SetScene: Scene not set due to it being daylight.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Utility.ConsoleWithLog($"{ex.Message}");
+                    return false;
                 }
 
                 return false;
@@ -141,7 +149,7 @@ namespace PhilipsHueWebhookHandler
                     return false;
                 }
 
-                if (logLevel == "Detail")
+                if (logLevel .ToLower()== "detail")
                     Utility.ConsoleWithLog($"SetScene: Scene: {sceneName}");
 
                 if (scene is not null)
@@ -153,7 +161,7 @@ namespace PhilipsHueWebhookHandler
                     }
                     else
                     {
-                        if (logLevel == "Detail")
+                        if (logLevel .ToLower()== "detail")
                         {
                             Utility.ConsoleWithLog($"Error(s) setting scene {sceneName}: ");
                             foreach (var error in result.Errors)

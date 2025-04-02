@@ -189,7 +189,7 @@ namespace PhilipsHueWebhookHandler
                             break;
                         }
 
-                        if (Configuration.Config.LogLevel == "Detail")
+                        if (Configuration.Config.LogLevel.ToLower() == "detail")
                             PayloadDump.DumpPayload(webhookData);
 
                         string user = webhookData.User.Name;
@@ -202,7 +202,7 @@ namespace PhilipsHueWebhookHandler
 
                         if(userConfig is not null)
                         {
-                            if(Configuration.Config.LogLevel == "Detail")
+                            if(Configuration.Config.LogLevel.ToLower() == "detail")
                             {
                                 Utility.ConsoleWithLog($"User: {user} Device: {device} Event: {playbackEvent}");
                             }
@@ -246,13 +246,13 @@ namespace PhilipsHueWebhookHandler
                             {
                                 string logLevel = Configuration.Config?.LogLevel ?? "DefaultLogLevel";
                                
-                                if (considerDaylight == true && userConfig.IgnoreDaytime == false)
+                                if (considerDaylight == true && userConfig.DaytimeOverride == false)
                                 {
-                                    success = await BridgeController.SetScene(sceneName, logLevel, false).ConfigureAwait(false);
+                                    success = await BridgeController.SetScene(sceneName, logLevel, true).ConfigureAwait(false);
                                 }
                                 else
                                 {
-                                    success = await BridgeController.SetScene(sceneName, logLevel, true).ConfigureAwait(false);
+                                    success = await BridgeController.SetScene(sceneName, logLevel, false).ConfigureAwait(false);
                                 }
                             }
                         }
@@ -261,7 +261,7 @@ namespace PhilipsHueWebhookHandler
                             Utility.ConsoleWithLog($"User {user} or device {device} not found in configuration.");
                         }
 
-                        if (Configuration.Config?.LogLevel == "Detail")
+                        if (Configuration.Config?.LogLevel.ToLower() == "detail")
                         {
                             if (success)
                             {
@@ -277,7 +277,7 @@ namespace PhilipsHueWebhookHandler
                     }
                     catch (Exception ex)
                     {
-                        Utility.ConsoleWithLog("Error parsing JSON payload:");
+                        Utility.ConsoleWithLog("Error processing webhook event:");
                         Utility.ConsoleWithLog(ex.Message);
                     }
 

@@ -29,7 +29,6 @@ namespace PhilipsHueWebhookHandler
                             throw new InvalidOperationException("Invalid response from Sunrise-Sunset API.");
                         }
 
-                        // Parse and cache sunrise and sunset times
                         sunrise = DateTime.Parse(jsonResponse.Results.Sunrise, CultureInfo.InvariantCulture);
                         sunset = DateTime.Parse(jsonResponse.Results.Sunset, CultureInfo.InvariantCulture);
                         lastFetchTime = DateTime.UtcNow; // Update the fetch timestamp
@@ -37,14 +36,11 @@ namespace PhilipsHueWebhookHandler
                 }
 
                 var currentTime = DateTime.UtcNow;
-
-                // Return true if the current UTC time is between cached sunrise and sunset
                 return currentTime >= sunrise && currentTime <= sunset;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error: {ex.Message}");
-                return false;
+                throw new InvalidOperationException($"Exception in Sunrise-Sunset API. Exception: {ex.Message}");
             }
         }
 
