@@ -307,7 +307,7 @@ namespace PhilipsHueWebhookHandler
         {
             Utility.ConsoleWithLog("Parameters: (Case Insensitive)");
             Utility.ConsoleWithLog("\t-Discover  List all Hue Bridges on your network.");
-            Utility.ConsoleWithLog("\t-AutoRegister  Register this applicaiton with the bridge. Note only works if there is only 1 bridge on your network.");
+            Utility.ConsoleWithLog("\t-AutoRegister  Register this application with the bridge. Note only works if there is only 1 bridge on your network.");
             Utility.ConsoleWithLog("\t-Register=<Bridge IP Address> Register this application on the specified bridge.");
             Utility.ConsoleWithLog("\t-ListScenes=<Config JSON file path> List all scenes on the bridge using the specified config file.");
             Utility.ConsoleWithLog("\t-Run=<Config JSON file path> Run using the specified config file.");
