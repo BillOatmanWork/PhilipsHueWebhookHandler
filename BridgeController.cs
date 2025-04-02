@@ -62,7 +62,7 @@ namespace PhilipsHueWebhookHandler
             try
             {
                 string? appKey = await client.RegisterAsync(_appName, "EmbyServer").ConfigureAwait(false);
-                if (appKey == null)
+                if (appKey is null)
                 {
                     throw new InvalidOperationException($"Failed to register with the bridge at {bridgeIp}.");
                 }
@@ -143,7 +143,7 @@ namespace PhilipsHueWebhookHandler
                 }
 
                 var scene = _scenes.FirstOrDefault(s => s.Name.Equals(sceneName, StringComparison.OrdinalIgnoreCase));
-                if (scene == null)
+                if (scene is null)
                 {
                     Utility.ConsoleWithLog($"Scene {sceneName} not found on the bridge.");
                     return false;

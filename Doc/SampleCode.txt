@@ -51,7 +51,7 @@ class Program
 
         // Find a specific scene by name
         var scene = scenes.FirstOrDefault(s => s.Name == "Relax"); // Replace with your scene name
-        if (scene == null)
+        if (scene is null)
         {
             Console.WriteLine("Scene not found.");
             return;

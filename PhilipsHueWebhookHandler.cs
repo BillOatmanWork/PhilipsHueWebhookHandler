@@ -43,7 +43,7 @@ namespace PhilipsHueWebhookHandler
                     return;
                 }
 
-                if (arg == "-discover")
+                if (arg.ToLower() == "-discover")
                 {
                     await BridgeController.DiscoverBridges().ConfigureAwait(false);
                     Console.WriteLine("");
@@ -52,16 +52,7 @@ namespace PhilipsHueWebhookHandler
                     return;
                 }
 
-                if (arg == "-listscenes")
-                {
-                    await BridgeController.GetScenes("192.168.50.204", "8fLBDiVmqfRkZxqEZgOSJ4xPHAzjf8FqsnT1loay").ConfigureAwait(false);
-                    Console.WriteLine("");
-                    Console.WriteLine("Hit enter to continue");
-                    Console.ReadLine();
-                    return;
-                }
-
-                if (arg == "-autoregister")
+                if (arg.ToLower() == "-autoregister")
                 {
                     int numBridges = await BridgeController.DiscoverBridges(true).ConfigureAwait(false);
                     Console.WriteLine("");
@@ -128,6 +119,27 @@ namespace PhilipsHueWebhookHandler
                         run = true;
                         break;
 
+                        case "-listscenes":
+                        configFilePath = arg.Substring(arg.IndexOf('=') + 1);
+                        if (Configuration.LoadConfig(configFilePath) == false)
+                        {
+                            Utility.ConsoleWithLog("Error loading configuration file.");
+                            return;
+                        }
+
+                        if (Configuration.Config?.BridgeIP is null || Configuration.Config?.Key is null)
+                        {
+                            Utility.ConsoleWithLog("Configuration is missing BridgeIP or Key.");
+                            return;
+                        }
+
+                        await BridgeController.GetScenes(Configuration.Config.BridgeIP, Configuration.Config.Key).ConfigureAwait(false);
+                        Console.WriteLine("");
+                        Console.WriteLine("Hit enter to continue");
+                        Console.ReadLine();
+
+                        return;
+
                     case "-register":
                         string ip = arg.Substring(arg.IndexOf('=') + 1);
                         bool success = await BridgeController.RegisterWithBridge(ip).ConfigureAwait(false);
@@ -156,7 +168,7 @@ namespace PhilipsHueWebhookHandler
                 return;
             }
 
-            if (Configuration.Config?.BridgeIP == null || Configuration.Config?.Key == null)
+            if (Configuration.Config?.BridgeIP is null || Configuration.Config?.Key is null)
             {
                 Utility.ConsoleWithLog("Configuration is missing BridgeIP or Key.");
                 return;
@@ -295,11 +307,13 @@ namespace PhilipsHueWebhookHandler
         {
             Utility.ConsoleWithLog("Parameters: (Case Insensitive)");
             Utility.ConsoleWithLog("\t-Discover  List all Hue Bridges on your network.");
-            Utility.ConsoleWithLog("\t-AutoRegister  Register this applicaiton with the bridge. Note only works is there is only 1 bringe on your network.");
+            Utility.ConsoleWithLog("\t-AutoRegister  Register this applicaiton with the bridge. Note only works if there is only 1 bridge on your network.");
             Utility.ConsoleWithLog("\t-Register=<Bridge IP Address> Register this application on the specified bridge.");
-            Utility.ConsoleWithLog("\t-ListScenes List all scenes on the bridge.");
+            Utility.ConsoleWithLog("\t-ListScenes=<Config JSON file path> List all scenes on the bridge using the specified config file.");
             Utility.ConsoleWithLog("\t-Run=<Config JSON file path> Run using the specified config file.");
-            Utility.ConsoleWithLog("\tNote:  No spaces before or after the =, so for example -user=IamTheUser.");
+            Utility.ConsoleWithLog("\tNote:  No spaces before or after the =, so for example -register=192.168.11.12");
+            Utility.ConsoleWithLog("");
+            Utility.ConsoleWithLog("See the included sample config and PDF files for config file details.");
             Utility.ConsoleWithLog("");
             Utility.ConsoleWithLog("");
 

@@ -2,7 +2,7 @@
   "profiles": {
     "PhilipsHueWebhookHandler": {
       "commandName": "Project",
-      "commandLineArgs": "-run=config.json"
+      "commandLineArgs": "-ListScenes=config.json"
     }
   }
 }

@@ -24,7 +24,7 @@ namespace PhilipsHueWebhookHandler
                         var response = await client.GetStringAsync(apiUrl).ConfigureAwait(false);
                         var jsonResponse = JsonSerializer.Deserialize<SunriseSunsetResponse>(response);
 
-                        if (jsonResponse?.Results == null)
+                        if (jsonResponse?.Results is null)
                         {
                             throw new InvalidOperationException("Invalid response from Sunrise-Sunset API.");
                         }
