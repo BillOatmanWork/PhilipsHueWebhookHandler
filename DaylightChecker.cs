@@ -44,13 +44,13 @@ namespace PhilipsHueWebhookHandler
             }
         }
 
-        private class SunriseSunsetResponse
+        private sealed class SunriseSunsetResponse
         {
             [JsonPropertyName("results")]
             public required SunriseSunsetResults Results { get; set; }
         }
 
-        private class SunriseSunsetResults
+        private sealed  class SunriseSunsetResults
         {
             [JsonPropertyName("sunrise")]
             public required string Sunrise { get; set; }

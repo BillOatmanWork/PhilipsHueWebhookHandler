@@ -8,18 +8,18 @@ dotnet publish -r linux-x64 -c Release /p:PublishSingleFile=true /p:IncludeNativ
 cd C:\repos\PhilipsHueWebhookHandler\Build
 
 copy /Y "C:\repos\PhilipsHueWebhookHandler\bin\Release\net8.0\win-x64\publish\PhilipsHueWebhookHandler.exe" .
-"C:\Program Files\7-Zip\7z" a -tzip PhilipsHueWebhookHandler-WIN-8.zip PhilipsHueWebhookHandler.exe SampleConfig.json PhilipsHueWebhookHandler.pdf
+"C:\Program Files\7-Zip\7z" a -tzip PhilipsHueWebhookHandler-WIN.zip PhilipsHueWebhookHandler.exe SampleConfig.json PhilipsHueWebhookHandler.pdf
 
 copy /Y "C:\repos\PhilipsHueWebhookHandler\bin\Release\net8.0\osx-x64\publish\PhilipsHueWebhookHandler" .
-"C:\Program Files\7-Zip\7z" a -t7z PhilipsHueWebhookHandler-OSX-8.7z PhilipsHueWebhookHandler SampleConfig.json PhilipsHueWebhookHandler.pdf
+"C:\Program Files\7-Zip\7z" a -t7z PhilipsHueWebhookHandler-OSX.7z PhilipsHueWebhookHandler SampleConfig.json PhilipsHueWebhookHandler.pdf
 
 copy /Y "C:\repos\PhilipsHueWebhookHandler\bin\Release\net8.0\linux-x64\publish\PhilipsHueWebhookHandler" .
-"C:\Program Files\7-Zip\7z" a -t7z PhilipsHueWebhookHandler-LIN64-8.7z PhilipsHueWebhookHandler SampleConfig.json PhilipsHueWebhookHandler.pdf
+"C:\Program Files\7-Zip\7z" a -t7z PhilipsHueWebhookHandler-LIN64.7z PhilipsHueWebhookHandler SampleConfig.json PhilipsHueWebhookHandler.pdf
 
 copy /Y "C:\repos\PhilipsHueWebhookHandler\bin\Release\net8.0\linux-arm\publish\PhilipsHueWebhookHandler" .
-"C:\Program Files\7-Zip\7z" a -t7z PhilipsHueWebhookHandler-RasPi-8.7z PhilipsHueWebhookHandler SampleConfig.json PhilipsHueWebhookHandler.pdf
+"C:\Program Files\7-Zip\7z" a -t7z PhilipsHueWebhookHandler-RasPi.7z PhilipsHueWebhookHandler SampleConfig.json PhilipsHueWebhookHandler.pdf
 
 copy /Y "C:\repos\PhilipsHueWebhookHandler\bin\Release\net8.0\linux-arm64\publish\PhilipsHueWebhookHandler" .
-"C:\Program Files\7-Zip\7z" a -t7z PhilipsHueWebhookHandler-RasPi64-8.7z PhilipsHueWebhookHandler SampleConfig.json PhilipsHueWebhookHandler.pdf
+"C:\Program Files\7-Zip\7z" a -t7z PhilipsHueWebhookHandler-RasPi64.7z PhilipsHueWebhookHandler SampleConfig.json PhilipsHueWebhookHandler.pdf
 
 

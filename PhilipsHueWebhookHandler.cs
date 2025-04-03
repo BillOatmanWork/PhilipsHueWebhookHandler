@@ -201,7 +201,7 @@ namespace PhilipsHueWebhookHandler
                             break;
                         }
 
-                        if (Configuration.Config.LogLevel.ToLower() == "detail")
+                        if (Configuration.Config is not null && Configuration.Config.LogLevel is not null && Configuration.Config.LogLevel.ToLower() == "detail")
                             PayloadDump.DumpPayload(webhookData);
 
                         string user = webhookData.User.Name;
@@ -214,7 +214,7 @@ namespace PhilipsHueWebhookHandler
 
                         if(userConfig is not null)
                         {
-                            if(Configuration.Config.LogLevel.ToLower() == "detail")
+                            if (Configuration.Config is not null && Configuration.Config.LogLevel is not null && Configuration.Config.LogLevel.ToLower() == "detail")
                             {
                                 Utility.ConsoleWithLog($"User: {user} Device: {device} Event: {playbackEvent}");
                             }
@@ -273,7 +273,7 @@ namespace PhilipsHueWebhookHandler
                             Utility.ConsoleWithLog($"User {user} or device {device} not found in configuration.");
                         }
 
-                        if (Configuration.Config?.LogLevel.ToLower() == "detail")
+                        if (Configuration.Config is not null && Configuration.Config.LogLevel is not null && Configuration.Config.LogLevel.ToLower() == "detail")
                         {
                             if (success)
                             {
