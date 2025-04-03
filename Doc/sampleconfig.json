@@ -1,5 +1,5 @@
 {
-	"Description":	"Only Bridge",
+	"Description":	"Greatest Bridge",
 	"BridgeIP":		"192.168.xxx.xxx",
 	"Key":			"Bridge Key",
 	"Latitude":		38.897957,
@@ -11,7 +11,7 @@
 			"Devices":	[
 				{
 					"Name":				"LivingRoom",
-					"DaytimeOverride":	false,
+					"DaytimeOverride":	true,
 					"PlayScene":		"Main Play",
 					"PauseScene":		"Main Pause",
 					"UnPauseScene":		"Main Play",
