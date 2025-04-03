@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <Folder Include="Doc\" />
+    <Folder Include="Build\" />
   </ItemGroup>
 
   <ItemGroup>
