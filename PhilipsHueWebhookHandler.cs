@@ -1,6 +1,4 @@
-using System.Diagnostics;
 using System.Net;
-using System.Runtime.InteropServices;
 using System.Text.Json;
 
 namespace PhilipsHueWebhookHandler
@@ -168,19 +166,19 @@ namespace PhilipsHueWebhookHandler
                 return;
             }
 
-            if (Configuration.Config?.BridgeIP is null || Configuration.Config?.Key is null)
+            if (Configuration.Config?.BridgeIP is null || Configuration.Config?.Key is null || Configuration.Config?.Endpoint is null)
             {
-                Utility.ConsoleWithLog("Configuration is missing BridgeIP or Key.");
+                Utility.ConsoleWithLog("Configuration is missing BridgeIP, Key, or Endpoint.");
                 return;
             }
 
             BridgeController.InitializeAsync(Configuration.Config.BridgeIP, Configuration.Config.Key);
 
             var listener = new HttpListener();
-            listener.Prefixes.Add("http://localhost:8080/webhook/");
+            listener.Prefixes.Add(Configuration.Config.Endpoint);
             listener.Start();
 
-            Utility.ConsoleWithLog("Webhook endpoint is running on http://localhost:8080/webhook/");
+            Utility.ConsoleWithLog($"Webhook endpoint is running on {Configuration.Config.Endpoint}");
             Utility.ConsoleWithLog($"LogLevel: {Configuration.Config.LogLevel}");
 
             while (true)
@@ -291,6 +289,7 @@ namespace PhilipsHueWebhookHandler
                     {
                         Utility.ConsoleWithLog("Error processing webhook event:");
                         Utility.ConsoleWithLog(ex.Message);
+                        Utility.ConsoleWithLog($"Payload: {payload}");
                     }
 
                     // Send a success response to the webhook sender

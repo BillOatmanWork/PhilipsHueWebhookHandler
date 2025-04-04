@@ -18,7 +18,7 @@ namespace PhilipsHueWebhookHandler
         public List<object> Taglines { get; set; } = new List<object>();
         public List<object> Genres { get; set; } = new List<object>();
         public long RunTimeTicks { get; set; }
-        public int Size { get; set; }
+        public long Size { get; set; }
         public string FileName { get; set; } = string.Empty;
         public int Bitrate { get; set; }
         public List<object> RemoteTrailers { get; set; } = new List<object>();
