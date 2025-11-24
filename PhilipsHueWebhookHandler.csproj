@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Title>Emby Philips Hue Webhook Handler</Title>
-    <Version>1.0.1.0</Version>
+    <Version>2.0.0.0</Version>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/BillOatmanWork/PhilipsHueWebhookHandler</RepositoryUrl>
     <RepositoryType>github</RepositoryType>
@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Q42.HueApi" Version="3.23.2" />
+    <PackageReference Include="HueApi" Version="3.0.0" />
   </ItemGroup>
 
   <ItemGroup>

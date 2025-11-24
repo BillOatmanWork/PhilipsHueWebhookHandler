@@ -1,8 +1,7 @@
-using Q42.HueApi;
-using Q42.HueApi.Interfaces;
-using Q42.HueApi.Models;
-using Q42.HueApi.Models.Bridge;
-using Q42.HueApi.Models.Groups;
+using HueApi;
+using HueApi.BridgeLocator;
+using HueApi.Models;
+using HueApi.Models.Requests;
 
 // https://github.com/michielpost/Q42.HueApi/blob/master/src/HueApi.ConsoleSample/Program.cs
 
@@ -12,7 +11,7 @@ namespace PhilipsHueWebhookHandler
     {
         private static string? _bridgeIp;
         private static string? _key;
-        private static ILocalHueClient? _client;
+        private static LocalHueApi? _client;
         private const string _appName = "EmbyHueHandler";
         private static List<Scene> _scenes = new List<Scene>();
 
@@ -22,26 +21,23 @@ namespace PhilipsHueWebhookHandler
             _key = key;
 
             // Initialize the client
-            if (!string.IsNullOrEmpty(_bridgeIp))
-                _client = new LocalHueClient(_bridgeIp);
-
-            if (!string.IsNullOrEmpty(_key) && _client is not null)
-                _client.Initialize(_key);
+            if (!string.IsNullOrEmpty(_bridgeIp) && !string.IsNullOrEmpty(_key))
+                _client = new LocalHueApi(_bridgeIp, _key);
         }
 
         public static async Task<int> DiscoverBridges(bool fromRegisterWithBridge = false)
         {
             var locator = new HttpBridgeLocator();
-            IEnumerable<LocatedBridge> bridges = (await locator.LocateBridgesAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false)).ToList();
+            IEnumerable<LocatedBridge> bridges = await locator.LocateBridgesAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
 
             if (bridges.Any())
             {
                 if (fromRegisterWithBridge == true && bridges.Count() == 1)
-                    _bridgeIp = bridges.First().IpAddress;
+                    _bridgeIp = bridges.First().BridgeId;
 
                 foreach (var bridge in bridges)
                 {
-                    Utility.ConsoleWithLog($"Bridge found: IP = {bridge.IpAddress}");
+                    Utility.ConsoleWithLog($"Bridge found: IP = {bridge.BridgeId}");
                 }
             }
             else
@@ -54,19 +50,18 @@ namespace PhilipsHueWebhookHandler
 
         public static async Task<bool> RegisterWithBridge(string bridgeIp)
         {
-            ILocalHueClient client = new LocalHueClient(bridgeIp);
-
             Console.WriteLine($"Press the button on your Hue Bridge at {bridgeIp}, then press Enter to register ...");
             Console.ReadLine();
 
             try
             {
-                string? appKey = await client.RegisterAsync(_appName, "EmbyServer").ConfigureAwait(false);
-                if (appKey is null)
+                var result = await LocalHueApi.RegisterAsync(bridgeIp, _appName, "EmbyServer").ConfigureAwait(false);
+                if (result is null || string.IsNullOrEmpty(result.Username))
                 {
                     throw new InvalidOperationException($"Failed to register with the bridge at {bridgeIp}.");
                 }
 
+                string appKey = result.Username;
                 Console.WriteLine($"App registered successfully! Your app key: {appKey}");
                 Console.WriteLine("Your app key is stored in Keys.txt");
                 Console.WriteLine("");
@@ -92,18 +87,17 @@ namespace PhilipsHueWebhookHandler
 
         public static async Task GetScenes(string bridgeIp, string appKey)
         {
-            var client = new LocalHueClient(bridgeIp);
-            client.Initialize(appKey);
+            var client = new LocalHueApi(bridgeIp, appKey);
 
             try
             {
-                var scenes = await client.GetScenesAsync().ConfigureAwait(false);
-                _scenes = scenes.ToList();
+                var scenesResponse = await client.Scene.GetAllAsync().ConfigureAwait(false);
+                _scenes = scenesResponse.Data.ToList();
 
                 Utility.ConsoleWithLog($"Scenes available on the bridge at {bridgeIp}:");
                 foreach (var scene in _scenes)
                 {
-                    Utility.ConsoleWithLog($"{scene.Name}");
+                    Utility.ConsoleWithLog($"{scene.Metadata?.Name}");
                 }
             }
             catch (Exception ex)
@@ -138,40 +132,51 @@ namespace PhilipsHueWebhookHandler
             {
                 if(_scenes.Count == 0)
                 {
-                    var scenes = await _client.GetScenesAsync().ConfigureAwait(false);
-                    _scenes = scenes.ToList();
+                    var scenesResponse = await _client.Scene.GetAllAsync().ConfigureAwait(false);
+                    _scenes = scenesResponse.Data.ToList();
                 }
 
-                var scene = _scenes.FirstOrDefault(s => s.Name.Equals(sceneName, StringComparison.OrdinalIgnoreCase));
+                var scene = _scenes.FirstOrDefault(s => s.Metadata?.Name?.Equals(sceneName, StringComparison.OrdinalIgnoreCase) == true);
                 if (scene is null)
                 {
                     Utility.ConsoleWithLog($"Scene {sceneName} not found on the bridge.");
                     return false;
                 }
 
-                if (logLevel .ToLower()== "detail")
+                if (logLevel.ToLower() == "detail")
                     Utility.ConsoleWithLog($"SetScene: Scene: {sceneName}");
 
-                if (scene is not null)
+                try
                 {
-                    HueResults result = await _client.RecallSceneAsync(scene.Id).ConfigureAwait(false);
-                    if (!result.HasErrors())
+                    var updateScene = new UpdateScene()
                     {
-                        return true;
-                    }
-                    else
+                        Recall = new Recall { Action = SceneRecallAction.active }
+                    };
+
+                    var result = await _client.Scene.UpdateAsync(scene.Id, updateScene).ConfigureAwait(false);
+
+                    if (result.HasErrors)
                     {
-                        if (logLevel .ToLower()== "detail")
+                        if (logLevel.ToLower() == "detail")
                         {
                             Utility.ConsoleWithLog($"Error(s) setting scene {sceneName}: ");
                             foreach (var error in result.Errors)
                             {
-                                Utility.ConsoleWithLog($"Error: {error.Error!.Description}");
+                                Utility.ConsoleWithLog($"Error: {error.Description}");
                             }
                         }
-
                         return false;
                     }
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    if (logLevel.ToLower() == "detail")
+                    {
+                        Utility.ConsoleWithLog($"Exception setting scene {sceneName}: {ex.Message}");
+                    }
+                    return false;
                 }
             }
 
